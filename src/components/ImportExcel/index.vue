@@ -17,7 +17,6 @@
           :drag="true"
           :limit="excelLimit"
           :multiple="true"
-          :show-file-list="true"
           :http-request="uploadExcel"
           :before-upload="beforeExcelUpload"
           :on-exceed="handleExceed"
@@ -43,6 +42,7 @@
       <el-form-item label="数据覆盖 :">
         <el-switch v-model="isCover" />
       </el-form-item>
+      <el-progress :percentage="progress" :status="progressStatus" v-if="progressShow" />
     </el-form>
   </el-dialog>
 </template>
@@ -50,8 +50,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDownload } from '@/hooks/useDownload'
-import { Download } from '@element-plus/icons-vue'
+import { Download, UploadFilled } from '@element-plus/icons-vue'
 import { type UploadRequestOptions, type UploadRawFile, ElNotification } from 'element-plus'
+import { type AxiosProgressEvent, type AxiosRequestConfig } from 'axios'
 
 defineOptions({
   name: 'ImportExcel'
@@ -64,7 +65,7 @@ export interface ExcelParameterProps {
   fileSize?: number // 上传文件的大小
   fileType?: File.ExcelMimeType[] // 上传文件的类型
   tempApi?: (params: any) => Promise<any> // 下载模板的Api
-  importApi?: (params: any) => Promise<any> // 批量导入的Api
+  importApi?: (params: any, options: AxiosRequestConfig) => Promise<any> // 批量导入的Api
   getTableList?: () => void // 获取表格数据的Api
 }
 
@@ -103,12 +104,22 @@ const downloadTemp = () => {
   })
 }
 
+const progressShow = ref(false)
+const progress = ref<number>(0)
+const progressStatus = ref<string>('')
 // 文件上传
 const uploadExcel = async (param: UploadRequestOptions) => {
   let excelFormData = new FormData()
   excelFormData.append('file', param.file)
   excelFormData.append('isCover', isCover.value as unknown as Blob)
-  await parameter.value.importApi!(excelFormData)
+  await parameter.value.importApi!(excelFormData, {
+    onUploadProgress: (event: AxiosProgressEvent) => {
+      progress.value = event.total! > 0 ? Math.floor((event.loaded / event.total!) * 100) : 0
+      if (progress.value >= 100) {
+        progressStatus.value = 'success'
+      }
+    }
+  })
   parameter.value.getTableList && parameter.value.getTableList()
   dialogVisible.value = false
 }
@@ -120,6 +131,7 @@ const uploadExcel = async (param: UploadRequestOptions) => {
 const beforeExcelUpload = (file: UploadRawFile) => {
   const isExcel = parameter.value.fileType!.includes(file.type as File.ExcelMimeType)
   const fileSize = file.size / 1024 / 1024 < parameter.value.fileSize!
+
   if (!isExcel)
     ElNotification({
       title: '温馨提示',
@@ -134,6 +146,7 @@ const beforeExcelUpload = (file: UploadRawFile) => {
         type: 'warning'
       })
     }, 0)
+  progressShow.value = true
   return isExcel && fileSize
 }
 
@@ -153,6 +166,9 @@ const excelUploadError = () => {
     message: `导入${parameter.value.title}失败，请您重新上传！`,
     type: 'error'
   })
+  progress.value = 0
+  progressStatus.value = ''
+  progressShow.value = false
 }
 
 // 上传成功提示
@@ -162,6 +178,9 @@ const excelUploadSuccess = () => {
     message: `导入${parameter.value.title}成功！`,
     type: 'success'
   })
+  progress.value = 0
+  progressStatus.value = ''
+  progressShow.value = false
 }
 
 defineExpose({

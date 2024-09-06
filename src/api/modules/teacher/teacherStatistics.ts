@@ -3,6 +3,7 @@ import { ADMIN_MODULE } from '@/api/helper/prefix'
 import type { IPage } from '@/api/interface'
 import type { ITeacherStatistics } from '@/api/interface/teacher/teacherStatistics'
 import type { UploadRawFile } from 'element-plus/es/components/upload/src/upload'
+import type { AxiosRequestConfig } from 'axios'
 /**
  * 查询列表
  * @param params
@@ -52,9 +53,13 @@ export const getTeacherStatisticsDetailApi = (params: { id: number }) => {
 /**
  * 导入excel
  * @param params
+ * @param options
  */
-export const importTeacherStatisticsExcelApi = (params: UploadRawFile) => {
-  return http.upload(ADMIN_MODULE + `/teacher-statistics/import`, params)
+export const importTeacherStatisticsExcelApi = (
+  params: UploadRawFile,
+  options: AxiosRequestConfig = {}
+) => {
+  return http.upload(ADMIN_MODULE + `/teacher-statistics/import`, params, options)
 }
 
 /**
