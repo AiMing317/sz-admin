@@ -83,8 +83,7 @@ type Props = {
   dir: string
   name?: string
   modelValue?: string | string[]
-  fileName?: string
-  isAppendTime: boolean
+  isAppendTime?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
