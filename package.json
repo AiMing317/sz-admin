@@ -1,6 +1,6 @@
 {
   "name": "sz-admin",
-  "version": "0.8.1",
+  "version": "0.8.3",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -47,6 +47,7 @@
     "sass": "~1.79.5",
     "typescript": "~5.2.2",
     "vite": "^5.4.8",
+    "vite-plugin-vue-devtools": "^7.6.4",
     "vue-tsc": "^2.1.6"
   }
 }
