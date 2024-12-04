@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    :title="`${paramsProps.title}`"
+    :title="`${paramsProps.title}：${paramsProps.row?.tableName}`"
     :destroy-on-close="true"
     :close-on-click-modal="false"
     :close-on-press-escape="true"
@@ -567,10 +567,10 @@ const isShowExcel = ref<boolean>(true);
 // ]
 const columns = ref<ColumnProps<IGenerator.ColumnInfo>[]>([
   { type: 'sort', width: 75, label: '拖拽排序' },
-  { prop: 'columnName', label: '字段列名', width: 120 },
-  { prop: 'columnComment', label: '字段描述', width: 105 },
-  { prop: 'columnType', label: '物理类型', width: 105 },
-  { prop: 'javaType', label: 'Java类型', width: 105 },
+  { prop: 'columnName', label: '字段列名' },
+  { prop: 'columnComment', label: '字段描述' },
+  { prop: 'columnType', label: '物理类型' },
+  { prop: 'javaType', label: 'Java类型' },
   { prop: 'isPk', label: '主键', width: 45 },
   { prop: 'isIncrement', label: '自增', width: 50 },
   { prop: 'isUniqueValid', label: '唯一', width: 65 },
