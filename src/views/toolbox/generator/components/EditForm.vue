@@ -673,19 +673,23 @@ const getInfo = () => {
 };
 
 // 更新列属性的通用函数
-const updateColumns = (newValue: string, propToUpdate: string) => {
+const updateColumnVisibility = (propToUpdate: string, isVisible: boolean) => {
   const existingColumn = columns.value.find(col => col.prop === propToUpdate);
-
   if (existingColumn) {
-    existingColumn.isShow = newValue === '1';
+    existingColumn.isShow = isVisible;
   }
 };
 
 // 监听多个属性的变化，并执行相同的更新逻辑
 watchEffect(() => {
   try {
-    updateColumns(generatorInfo.value.hasImport, 'isImport');
-    updateColumns(generatorInfo.value.hasExport, 'isExport');
+    updateColumnVisibility('isImport', generatorInfo.value.hasImport === '1');
+    updateColumnVisibility('isExport', generatorInfo.value.hasExport === '1');
+
+    if (generatorInfo.value.generateType === 'service' || generatorInfo.value.generateType === 'db') {
+      updateColumnVisibility('isImport', false);
+      updateColumnVisibility('isExport', false);
+    }
     // 如果有其他类似的属性，也可以在这里进行处理
   } catch (error) {
     console.error('Error in watchEffect:', error);
