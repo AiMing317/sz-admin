@@ -567,22 +567,22 @@ const isShowExcel = ref<boolean>(true);
 // ]
 const columns = ref<ColumnProps<IGenerator.ColumnInfo>[]>([
   { type: 'sort', width: 75, label: '拖拽排序' },
-  { prop: 'columnName', label: '字段列名' },
-  { prop: 'columnComment', label: '字段描述' },
-  { prop: 'columnType', label: '物理类型' },
-  { prop: 'javaType', label: 'Java类型' },
-  { prop: 'isPk', label: '主键', width: 55 },
-  { prop: 'isIncrement', label: '自增', width: 55 },
-  { prop: 'isUniqueValid', label: '唯一', width: 75 },
-  { prop: 'isRequired', label: '必填', width: 55 },
-  { prop: 'isLogicDel', label: '逻辑删除', width: 75 },
-  { prop: 'isInsert', label: '插入', width: 75 },
-  { prop: 'isEdit', label: '编辑', width: 75 },
-  { prop: 'isList', label: '列表', width: 75 },
-  { prop: 'isQuery', label: '查询', width: 75 },
-  { prop: 'isImport', label: '导入', width: 75 },
-  { prop: 'isExport', label: '导出', width: 75 },
-  { prop: 'queryType', label: '查询方式' },
+  { prop: 'columnName', label: '字段列名', width: 120 },
+  { prop: 'columnComment', label: '字段描述', width: 105 },
+  { prop: 'columnType', label: '物理类型', width: 105 },
+  { prop: 'javaType', label: 'Java类型', width: 105 },
+  { prop: 'isPk', label: '主键', width: 45 },
+  { prop: 'isIncrement', label: '自增', width: 50 },
+  { prop: 'isUniqueValid', label: '唯一', width: 65 },
+  { prop: 'isRequired', label: '必填', width: 45 },
+  { prop: 'isLogicDel', label: '逻辑删除', width: 90 },
+  { prop: 'isInsert', label: '插入', width: 65 },
+  { prop: 'isEdit', label: '编辑', width: 65 },
+  { prop: 'isList', label: '列表', width: 65 },
+  { prop: 'isQuery', label: '查询', width: 65 },
+  { prop: 'isImport', label: '导入', width: 65 },
+  { prop: 'isExport', label: '导出', width: 65 },
+  { prop: 'queryType', label: '查询方式', width: 105 },
   { prop: 'htmlType', label: '显示类型' },
   { prop: 'dictType', label: '字典类型' },
   { prop: 'dictShowWay', label: '字典显示方式' }
@@ -683,13 +683,18 @@ const updateColumnVisibility = (propToUpdate: string, isVisible: boolean) => {
 // 监听多个属性的变化，并执行相同的更新逻辑
 watchEffect(() => {
   try {
-    updateColumnVisibility('isImport', generatorInfo.value.hasImport === '1');
-    updateColumnVisibility('isExport', generatorInfo.value.hasExport === '1');
+    const genType = generatorInfo.value.generateType;
+    updateColumnVisibility('isInsert', genType === 'all' || genType === 'server');
+    updateColumnVisibility('isEdit', genType === 'all' || genType === 'server');
+    updateColumnVisibility('isList', genType === 'all' || genType === 'server');
+    updateColumnVisibility('isQuery', genType === 'all' || genType === 'server');
+    updateColumnVisibility('isImport', (genType === 'all' || genType === 'server') && generatorInfo.value.hasImport === '1');
+    updateColumnVisibility('isExport', (genType === 'all' || genType === 'server') && generatorInfo.value.hasExport === '1');
+    updateColumnVisibility('queryType', genType === 'all' || genType === 'server');
+    updateColumnVisibility('htmlType', genType === 'all' || genType === 'server');
+    updateColumnVisibility('dictType', genType === 'all' || genType === 'server');
+    updateColumnVisibility('dictShowWay', genType === 'all' || genType === 'server');
 
-    if (generatorInfo.value.generateType === 'service' || generatorInfo.value.generateType === 'db') {
-      updateColumnVisibility('isImport', false);
-      updateColumnVisibility('isExport', false);
-    }
     // 如果有其他类似的属性，也可以在这里进行处理
   } catch (error) {
     console.error('Error in watchEffect:', error);
@@ -808,5 +813,15 @@ defineExpose({
 
 :deep(.el-select-group .el-select-dropdown__item) {
   padding-left: 32px;
+}
+:deep(.el-table .el-table__header th) {
+  font-size: 12px;
+}
+:deep(.el-table--default .cell) {
+  padding: 0 10px;
+}
+
+:deep(.table-main .el-table .el-table__row) {
+  font-size: 12px;
 }
 </style>
